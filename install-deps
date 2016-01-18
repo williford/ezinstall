@@ -113,6 +113,11 @@ elif [[ "$(uname)" == 'Linux' ]]; then
         export DEBIAN_FRONTEND=noninteractive
         distribution="ubuntu"
         ubuntu_major_version="${VERSION%%.*}"
+    # Detect Ubuntu
+    elif [[ "$DISTRO" = "debian" ]]; then
+        export DEBIAN_FRONTEND=noninteractive
+        distribution="ubuntu"
+        ubuntu_major_version="${VERSION%%.*}"
     # Detect elementary OS
     elif [[ "$DISTRO" = "elementary" ]]; then
         export DEBIAN_FRONTEND=noninteractive
@@ -123,7 +128,7 @@ elif [[ "$(uname)" == 'Linux' ]]; then
         distribution="centos"
         centos_major_version="$VERSION"
     else
-        echo '==> Only Ubuntu, elementary OS, Fedora, Archlinux and CentOS distributions are supported.'
+        echo '==> Only Ubuntu, elementary OS, Fedora, Archlinux, CentOS and Debian distributions are supported.'
         exit 1
     fi
 
@@ -162,7 +167,27 @@ elif [[ "$(uname)" == 'Linux' ]]; then
 
         install_openblas
 
+    elif [[ $distribution == 'debian' ]]; then # not tested well
+        declare -a target_pkgs
+        target_pkgs=( build-essential gcc g++ curl \
+                      cmake libreadline-dev git-core libqt4-core libqt4-gui \
+                      libqt4-dev libjpeg-dev libpng-dev ncurses-dev \
+                      imagemagick libzmq3-dev gfortran unzip gnuplot \
+                      gnuplot-x11 ipython nodejs libzmq3-dev libopenblas-base libopenblas-dev)
+        sudo apt-get update
+
+        gcc_major_version=$(gcc --version | grep ^gcc | awk '{print $4}' | \
+                            cut -c 1)
+        if [[ $gcc_major_version == '5' ]]; then
+            echo '==> Found GCC 5, installing GCC 4.9.'
+            sudo apt-get install -y gcc-4.9 libgfortran-4.9-dev g++-4.9
+        fi
+
+        sudo apt-get update
+        sudo apt-get install -y "${target_pkgs[@]}"
+
     elif [[ $distribution == 'elementary' ]]; then
+
         declare -a target_pkgs
         target_pkgs=( build-essential gcc g++ curl \
                       cmake libreadline-dev git-core libqt4-core libqt4-gui \
