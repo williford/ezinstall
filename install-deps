@@ -116,8 +116,7 @@ elif [[ "$(uname)" == 'Linux' ]]; then
     # Detect Ubuntu
     elif [[ "$DISTRO" = "debian" ]]; then
         export DEBIAN_FRONTEND=noninteractive
-        distribution="ubuntu"
-        ubuntu_major_version="${VERSION%%.*}"
+        distribution="debian"
     # Detect elementary OS
     elif [[ "$DISTRO" = "elementary" ]]; then
         export DEBIAN_FRONTEND=noninteractive
@@ -170,10 +169,11 @@ elif [[ "$(uname)" == 'Linux' ]]; then
     elif [[ $distribution == 'debian' ]]; then # not tested well
         declare -a target_pkgs
         target_pkgs=( build-essential gcc g++ curl \
-                      cmake libreadline-dev git-core libqt4-core libqt4-gui \
+                      cmake libreadline-dev git-core libqtcore4 libqtgui4 \
+                      libqt4-dbus libqt4-network libqt4-script libqt4-test libqt4-xml \
                       libqt4-dev libjpeg-dev libpng-dev ncurses-dev \
                       imagemagick libzmq3-dev gfortran unzip gnuplot \
-                      gnuplot-x11 ipython nodejs libzmq3-dev libopenblas-base libopenblas-dev)
+                      gnuplot-x11 ipython nodejs libzmq3-dev python-zmq libopenblas-base libopenblas-dev)
         sudo apt-get update
 
         gcc_major_version=$(gcc --version | grep ^gcc | awk '{print $4}' | \
